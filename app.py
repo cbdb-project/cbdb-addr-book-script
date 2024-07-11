@@ -1,5 +1,7 @@
+import openpyxl
+from openpyxl_image_loader import SheetImageLoader
 import requests
-from flask import Flask, jsonify, render_template
+from flask import Flask, render_template
 import os.path
 
 from google.auth.transport.requests import Request
@@ -68,16 +70,56 @@ def read_google_sheet():
         print(err)
 
 
+def extract_images_from_excel(excel_file):
+    wb = openpyxl.load_workbook(excel_file)
+    sheet = wb[RANGE_NAME]
+    image_loader = SheetImageLoader(sheet)
+
+    image_dir = 'static/images'
+    if not os.path.exists(image_dir):
+        os.makedirs(image_dir)
+
+    # Dictionary to hold image positions and filenames
+    image_positions = {}
+
+    # Iterate over all cells in the sheet
+    for row in sheet.iter_rows():
+        for cell in row:
+            cell_address = cell.coordinate
+            if image_loader.image_in(cell_address):
+                # Get the image from the cell
+                image = image_loader.get(cell_address)
+                # Define the image file path
+                image_path = os.path.join(image_dir, f'image_{cell_address}.png')
+                # Save the image
+                image.save(image_path)
+                image_positions[cell_address] = f'{image_dir}/image_{cell_address}.png'
+
+    return image_positions
+
+
 # Download the Google sheet data and process locally
 def download_google_sheet(spreadsheet_id, out_file):
-    url = f'https://docs.google.com/spreadsheets/d/{spreadsheet_id}/export?format=csv'
+    url = f'https://docs.google.com/spreadsheets/d/{spreadsheet_id}/export?format=xlsx'
     response = requests.get(url)
     if response.status_code == 200:
         with open(out_file, 'wb') as f:
             f.write(response.content)
-            print('CSV file saved to: {}'.format(out_file))
-        df = pd.read_csv(out_file)
+            print('Table file saved to: {}'.format(out_file))
+
+        # load excel with image
+        # extract images
+        image_positions = extract_images_from_excel(out_file)
+        # read the tabular data
+        df = pd.read_excel(out_file, engine='openpyxl')
+        # insert image paths into df
+        for cell_address, img_path in image_positions.items():
+            col, row = openpyxl.utils.cell.coordinate_from_string(cell_address)
+            # print(col, row): M 2
+            row_idx = row - 2
+            df.at[row_idx, 'Photo'] = img_path
         return df
+
     else:
         print(f'Error downloading Google Sheet: {response.status_code}')
         return
@@ -86,19 +128,15 @@ def download_google_sheet(spreadsheet_id, out_file):
 @app.route('/')
 def index():
     # df = read_google_sheet()
-    df = download_google_sheet(SPREADSHEET_ID, "copy.csv")
-    return render_template('index.html', tables=[df.to_html(classes='data', header=True, index=False)])
-    # return render_template('index.html')
+    df = download_google_sheet(SPREADSHEET_ID, "copy.xlsx")
+    # return render_template('index.html', tables=[df.to_html(classes='data', header=True, index=False)])
+    data = df.to_dict(orient='records')
+    return render_template('image_tables.html', data=data)
 
 
 if __name__ == '__main__':
     app.run(debug=True)
     # read_google_sheet()
-
-    # test read in .csv from local
-    # df = pd.read_csv("cbdb_addr_book - current.csv")
-    # for index, row in df.iterrows():
-    #     print(len(row))
-
-
-
+    # df = download_google_sheet(SPREADSHEET_ID, "copy.xlsx")
+    # print(df.head())
+    # print(extract_images_from_excel("copy.xlsx"))
