@@ -1,3 +1,4 @@
+import requests
 from flask import Flask, jsonify, render_template
 import os.path
 
@@ -14,12 +15,15 @@ app = Flask(__name__)
 # If modifying these scopes, delete the file token.json.
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
 
-# The ID and range of a sample spreadsheet.
-SAMPLE_SPREADSHEET_ID = "19SUbSezEZ_ObEqfoNY3BDAM8z3cyBR-raql0Rs7_N3A"
-SAMPLE_RANGE_NAME = "current"
+# The ID and range of a spreadsheet
+SPREADSHEET_ID = "19SUbSezEZ_ObEqfoNY3BDAM8z3cyBR-raql0Rs7_N3A"
+# can be sheet name
+RANGE_NAME = "current"
 
 
-# Read data from Google Sheets
+# Read data from Google Sheets directly:
+# Credentials and authentication from Google sheet API
+# Error: Cannot get all of the data same with the Google sheet
 def read_google_sheet():
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
@@ -48,7 +52,7 @@ def read_google_sheet():
         sheet = service.spreadsheets()
         result = (
             sheet.values()
-            .get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range=SAMPLE_RANGE_NAME)
+            .get(spreadsheetId=SPREADSHEET_ID, range=RANGE_NAME)
             .execute()
         )
         values = result.get("values", [])
@@ -57,27 +61,44 @@ def read_google_sheet():
             print("No data found.")
             return
 
-        # for row in values:
-        #     print(row)
-        print(values)
-        return values
+        # values: list of list/row
+        df = pd.DataFrame(values[1:], columns=values[0])
+        return df
     except HttpError as err:
         print(err)
 
 
-
-@app.route('/api/table')
-def get_table():
-    df = read_google_sheet()
-    data = df.to_dict(orient='records')
-    return jsonify(data)
+# Download the Google sheet data and process locally
+def download_google_sheet(spreadsheet_id, out_file):
+    url = f'https://docs.google.com/spreadsheets/d/{spreadsheet_id}/export?format=csv'
+    response = requests.get(url)
+    if response.status_code == 200:
+        with open(out_file, 'wb') as f:
+            f.write(response.content)
+            print('CSV file saved to: {}'.format(out_file))
+        df = pd.read_csv(out_file)
+        return df
+    else:
+        print(f'Error downloading Google Sheet: {response.status_code}')
+        return
 
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    # df = read_google_sheet()
+    df = download_google_sheet(SPREADSHEET_ID, "copy.csv")
+    return render_template('index.html', tables=[df.to_html(classes='data', header=True, index=False)])
+    # return render_template('index.html')
 
 
 if __name__ == '__main__':
-    # app.run(debug=True)
-    read_google_sheet()
+    app.run(debug=True)
+    # read_google_sheet()
+
+    # test read in .csv from local
+    # df = pd.read_csv("cbdb_addr_book - current.csv")
+    # for index, row in df.iterrows():
+    #     print(len(row))
+
+
+

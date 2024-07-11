@@ -6,36 +6,20 @@
     <title>Google Drive Table Viewer</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <style>
-        body { padding: 20px; }
-        table { width: 100%; margin-top: 20px; }
-        th, td { padding: 10px; text-align: left; }
+        .data {
+            margin: 20px;
+        }
     </style>
 </head>
 <body>
-    <h1>Google Drive Table Viewer</h1>
-    <div id="table-container"></div>
+<div class="container">
+        <h2>Data Table</h2>
+        <div>
+            {% for table in tables %}
+            {{ table|safe }}
+        {% endfor %}
+        </div>
+    </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            fetch('/api/table')
-                .then(response => response.json())
-                .then(data => {
-                    let table = '<table class="table table-striped"><thead><tr>';
-                    for (let key in data[0]) {
-                        table += `<th>${key}</th>`;
-                    }
-                    table += '</tr></thead><tbody>';
-                    data.forEach(row => {
-                        table += '<tr>';
-                        for (let key in row) {
-                            table += `<td>${row[key]}</td>`;
-                        }
-                        table += '</tr>';
-                    });
-                    table += '</tbody></table>';
-                    document.getElementById('table-container').innerHTML = table;
-                });
-        });
-    </script>
 </body>
 </html>
