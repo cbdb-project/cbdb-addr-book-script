@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Table with Images</title>
+    <title>CBDB Address Book</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         .data {
@@ -26,12 +26,16 @@
 </head>
 <body>
     <div class="container">
-        <h1>Data Table with Images</h1>
+        <h1>CBDB Address Book</h1>
         <table class="data table table-bordered">
             <thead>
                 <tr>
                     {% for col in data[0].keys() %}
-                        <th>{{ col }}</th>
+                        {% if col[:7] == "Unnamed" %}
+                            <th></th>
+                        {% else %}
+                            <th>{{ col }}</th>
+                        {% endif %}
                     {% endfor %}
                 </tr>
             </thead>
@@ -42,6 +46,12 @@
                             <td>
                                 {% if value is string and value.endswith('.png') %}
                                     <img src="{{ url_for('static', filename=value.split('static/')[1]) }}" alt="Image">
+<!--                                cell number-->
+                                {% elif value|int != 0 %}
+                                    {{value | int}}
+<!--                                skip nan-->
+                                {% elif value | float != 0 %}
+
                                 {% else %}
                                     {{ value }}
                                 {% endif %}
