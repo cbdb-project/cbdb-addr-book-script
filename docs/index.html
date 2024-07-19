@@ -16,10 +16,14 @@
             padding: 8px;
             text-align: left;
         }
+        img {
+            max-width: 100px; /* Adjust the size as needed */
+            height: auto;
+        }
     </style>
 </head>
 <body>
-    <h1>CBDB ADDR BOOK</h1>
+    <h1>CBDB ADDRESS BOOK</h1>
     <table id="data-table">
         <thead>
             <tr id="table-header">
@@ -50,7 +54,15 @@
                     keys.forEach(key => {
                         let cell = row.insertCell();
                         let value = item[key];
-                        cell.textContent = value !== null ? value : '';
+                        if (isImage(value)) {
+                            // Create an <img> element
+                            let img = document.createElement('img');
+                            img.src = value;
+                            cell.appendChild(img);
+                        } else {
+                            cell.textContent = value !== null ? value : '';
+                        }
+                        // cell.textContent = value !== null ? value : '';
                     });
                 });
             })
