@@ -50,7 +50,7 @@
                     keys.forEach(key => {
                         let cell = row.insertCell();
                         let value = item[key];
-                        if (value.endsWith("png")) {
+                        if (isImage(value)) {
                             let img = document.createElement('img');
                             img.src = value;
                             cell.appendChild(img);
