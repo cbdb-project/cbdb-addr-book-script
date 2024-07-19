@@ -50,14 +50,7 @@
                     keys.forEach(key => {
                         let cell = row.insertCell();
                         let value = item[key];
-                        if (isImage(value)) {
-                            let img = document.createElement('img');
-                            img.src = value;
-                            cell.appendChild(img);
-                        } else {
-                            cell.textContent = value !== null ? value : '';
-                        }
-                        // cell.textContent = item[key] !== null ? item[key] : '';
+                        cell.textContent = value !== null ? value : '';
                     });
                 });
             })
