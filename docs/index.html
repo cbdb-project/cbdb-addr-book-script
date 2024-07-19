@@ -1,67 +1,59 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CBDB Address Book</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Render Data</title>
     <style>
-        .data {
+        table {
             width: 100%;
-            margin: 20px 0;
             border-collapse: collapse;
         }
-        .data th, .data td {
-            border: 1px solid #ddd;
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
             padding: 8px;
-        }
-        .data th {
-            background-color: #f2f2f2;
-        }
-        img {
-            max-width: 100px;
-            max-height: 100px;
+            text-align: left;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>CBDB Address Book</h1>
-        <table class="data table table-bordered">
-            <thead>
-                <tr>
-                    {% for col in data[0].keys() %}
-                        {% if col[:7] == "Unnamed" %}
-                            <th></th>
-                        {% else %}
-                            <th>{{ col }}</th>
-                        {% endif %}
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in data %}
-                    <tr>
-                        {% for key, value in row.items() %}
-                            <td>
-                                {% if value is string and value.endswith('.png') %}
-                                    <img src="{{ url_for('static', filename=value.split('static/')[1]) }}" alt="Image">
-<!--                                cell number-->
-                                {% elif value|int != 0 %}
-                                    {{value | int}}
-<!--                                skip nan-->
-                                {% elif value | float != 0 %}
+    <h1>Data Table</h1>
+    <table id="data-table">
+        <thead>
+            <tr id="table-header">
+                <!-- Headers will be inserted here -->
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be inserted here -->
+        </tbody>
+    </table>
+    <script>
+        fetch('data.json')
+            .then(response => response.json())
+            .then(data => {
+                // Create table headers
+                const tableHeader = document.getElementById('table-header');
+                const keys = Object.keys(data[0]);
+                keys.forEach(key => {
+                    let th = document.createElement('th');
+                    th.textContent = key;
+                    tableHeader.appendChild(th);
+                });
 
-                                {% else %}
-                                    {{ value }}
-                                {% endif %}
-                            </td>
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                // Create table rows
+                const tableBody = document.getElementById('data-table').getElementsByTagName('tbody')[0];
+                data.forEach(item => {
+                    let row = tableBody.insertRow();
+                    keys.forEach(key => {
+                        let cell = row.insertCell();
+                        cell.textContent = item[key] !== null ? item[key] : '';
+                    });
+                });
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    </script>
 </body>
 </html>
-

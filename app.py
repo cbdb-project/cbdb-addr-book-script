@@ -19,3 +19,4 @@ if __name__ == '__main__':
     # df = download_google_sheet(SPREADSHEET_ID, "copy.xlsx")
     # print(df.head())
     # print(extract_images_from_excel("copy.xlsx"))
+
