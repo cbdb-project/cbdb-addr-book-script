@@ -58,7 +58,8 @@
                         if (value.endsWith("png")) {
                             // Create an <img> element
                             let img = document.createElement('img');
-                            img.src = value;
+                            // img.src = value;
+                            img.src = "https://cdn.britannica.com/80/150980-050-84B9202C/Giant-panda-cub-branch.jpg"
                             cell.appendChild(img);
                         } else {
                             cell.textContent = value !== null ? value : '';
