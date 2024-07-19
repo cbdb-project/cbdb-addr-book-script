@@ -54,12 +54,11 @@
                     keys.forEach(key => {
                         let cell = row.insertCell();
                         let value = item[key];
-                        if (isImage(value)) {
-                            console.log(value)
+                        console.log(value)
+                        if (value.endsWith("png")) {
                             // Create an <img> element
                             let img = document.createElement('img');
                             img.src = value;
-                            img.onerror = () => console.error('Image load error for src:', value);
                             cell.appendChild(img);
                         } else {
                             cell.textContent = value !== null ? value : '';
