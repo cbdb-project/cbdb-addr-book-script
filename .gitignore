@@ -168,4 +168,4 @@ token.json
 
 copy.xlsx
 
-static/
+#static/
