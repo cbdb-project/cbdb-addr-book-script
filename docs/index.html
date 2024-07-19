@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Render Data</title>
+    <title>Contact Page</title>
     <style>
         table {
             width: 100%;
@@ -57,8 +57,10 @@
                         console.log(value)
                         if (typeof value === 'string' && value.endsWith(".png")) {
                             // Create an <img> element
-                            let img = document.createElement('img');
+                            // let img = document.createElement('img');
+                            let img = new Image()
                             img.src = value;
+                            img.onerror = () => console.error('Image load error for src:', img.src);
                             cell.appendChild(img);
                         } else {
                             cell.textContent = value !== null ? value : '';
