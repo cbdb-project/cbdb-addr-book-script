@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Page</title>
     <style>
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -17,9 +21,21 @@
             text-align: left;
         }
         img {
-            max-width: 100px; /* Adjust the size as needed */
+            max-width: 100px;
             height: auto;
         }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
     </style>
 </head>
 <body>
@@ -43,7 +59,11 @@
                 const keys = Object.keys(data[0]);
                 keys.forEach(key => {
                     let th = document.createElement('th');
-                    th.textContent = key;
+                    if (key.startsWith("Unnamed")) {
+                        th.textContent = "";
+                    } else {
+                        th.textContent = key;
+                    }
                     tableHeader.appendChild(th);
                 });
 
@@ -55,8 +75,6 @@
                         let cell = row.insertCell();
                         let value = item[key];
                         if (typeof value === 'string' && value.endsWith(".png")) {
-                            // Create an <img> element
-                            // let img = document.createElement('img');
                             let img = new Image()
                             img.src = value;
                             img.onerror = () => console.error('Image load error for src:', img.src);
@@ -64,7 +82,6 @@
                         } else {
                             cell.textContent = value !== null ? value : '';
                         }
-                        // cell.textContent = value !== null ? value : '';
                     });
                 });
             })
