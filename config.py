@@ -7,5 +7,5 @@ SPREADSHEET_ID = "19SUbSezEZ_ObEqfoNY3BDAM8z3cyBR-raql0Rs7_N3A"
 # i.e. sheet name
 RANGE_NAME = "current"
 
-DROP_COLUMN = ["Preferred First Name", "Cell", "VPA Signed", "Rotating mentor", "Group meeting presentation", "Unnamed: 15"]
+DROP_COLUMN = ["Preferred First Name", "Cell", "VPA Signed", "Rotating mentor", "Group meeting presentation"]
 
