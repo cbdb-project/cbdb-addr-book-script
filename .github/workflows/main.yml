@@ -18,6 +18,13 @@ jobs:
         with:
           http_url: https://docs.google.com/spreadsheets/d/19SUbSezEZ_ObEqfoNY3BDAM8z3cyBR-raql0Rs7_N3A/edit?gid=0#gid=0
           downloaded_filename: docs/copy.xlsx
+      - name: Commit download changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add docs/copy.xlsx
+          git commit -m 'Downloaded new copy'
+          git push
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
