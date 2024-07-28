@@ -8,7 +8,7 @@ from config import SPREADSHEET_ID, DROP_COLUMN
 
 def prepare_data():
     processed_data = []
-    df = download_google_sheet(SPREADSHEET_ID, "copy.xlsx")
+    df = download_google_sheet(SPREADSHEET_ID, "docs/copy.xlsx")
     columns_to_remove = DROP_COLUMN
     df = df.drop(columns=columns_to_remove, errors='ignore')
     # hardcode here to drop the last column with wrong input area
@@ -33,7 +33,7 @@ def prepare_data():
                 else:
                     record[key] = str(value)
         processed_data.append(record)
-    with open('data.json', 'w') as f:
+    with open('docs/data.json', 'w') as f:
         json.dump(processed_data, f)
 
 
