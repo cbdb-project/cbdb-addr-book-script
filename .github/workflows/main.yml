@@ -36,7 +36,7 @@ jobs:
 
       - name: Run data.py
         run: | 
-          python ./docs/data.py
+          python docs/data.py
 
       - name: Check git status after running data.py
         run: git status
