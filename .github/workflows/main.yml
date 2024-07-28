@@ -38,6 +38,12 @@ jobs:
         run: | 
           python ./docs/data.py
 
+      - name: Check git status after running data.py
+        run: git status
+
+      - name: View logs
+        run: cat docs/data.json
+
 
       - name: Commit changes
         run: |

@@ -1,5 +1,6 @@
 import json
 import math
+import logging
 
 from utils import download_google_sheet
 from config import SPREADSHEET_ID, DROP_COLUMN
@@ -37,4 +38,8 @@ def prepare_data():
 
 
 if __name__ == "__main__":
+    # Configure logging
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    logging.info("Starting data.py script")
     prepare_data()
+    logging.info("Updated docs/data.json successfully")
