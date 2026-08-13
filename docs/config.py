@@ -7,5 +7,17 @@ SPREADSHEET_ID = "19SUbSezEZ_ObEqfoNY3BDAM8z3cyBR-raql0Rs7_N3A"
 # i.e. sheet name
 RANGE_NAME = "current"
 
-DROP_COLUMN = ["Preferred First Name", "Cell", "VPA Signed", "Rotating mentor", "Group meeting presentation"]
-
+# Columns to publish, in output order. Selecting by name rather than dropping
+# unwanted ones and slicing by position keeps the output stable when editors
+# add, remove or reorder columns in the spreadsheet.
+KEEP_COLUMN = [
+    "LAST, First Name EN",
+    "Chinese Name",
+    "Email",
+    "Home Institution",
+    "Specialty",
+    "Task",
+    "Arrive/Depart",
+    "Affiliation",
+    "Photo",
+]

@@ -3,16 +3,18 @@ import math
 import logging
 
 from utils import download_google_sheet
-from config import SPREADSHEET_ID, DROP_COLUMN
+from config import SPREADSHEET_ID, KEEP_COLUMN
 
 
 def prepare_data():
     processed_data = []
     df = download_google_sheet(SPREADSHEET_ID, "docs/copy.xlsx")
-    columns_to_remove = DROP_COLUMN
-    df = df.drop(columns=columns_to_remove, errors='ignore')
-    # hardcode here to drop the last column with wrong input area
-    df = df.iloc[:, :9]
+
+    missing = [c for c in KEEP_COLUMN if c not in df.columns]
+    if missing:
+        logging.warning("Columns missing from the spreadsheet: %s", missing)
+    df = df[[c for c in KEEP_COLUMN if c in df.columns]]
+
     data = df.to_dict(orient='records')
 
     for record in data:
@@ -22,11 +24,6 @@ def prepare_data():
         for key, value in record.items():
             if isinstance(value, float) and math.isnan(value):
                 record[key] = ""
-            # if key == "Cell":
-            #     if math.isnan(value):
-            #         record[key] = ""
-            #     else:
-            #         record[key] = int(value)
             elif key == "Arrive/Depart":
                 if isinstance(value, float) and math.isnan(value):
                     record[key] = ""
