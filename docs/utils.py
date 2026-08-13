@@ -3,6 +3,7 @@ from openpyxl_image_loader import SheetImageLoader
 import requests
 import os.path
 import shutil
+import hashlib
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -84,9 +85,15 @@ def extract_images_from_excel(excel_file):
             cell_address = cell.coordinate
             if image_loader.image_in(cell_address):
                 image = image_loader.get(cell_address)
-                image_path = os.path.join(image_dir, f'image_{cell_address}.png')
-                image.save(image_path)
-                image_positions[cell_address] = f'{image_url_prefix}/image_{cell_address}.png'
+                # Name each file after its content hash: the browser must never serve a
+                # cached photo of a previous occupant when a row's picture changes.
+                tmp_path = os.path.join(image_dir, f'image_{cell_address}.tmp.png')
+                image.save(tmp_path)
+                with open(tmp_path, 'rb') as fh:
+                    digest = hashlib.md5(fh.read()).hexdigest()[:8]
+                filename = f'image_{cell_address}_{digest}.png'
+                os.replace(tmp_path, os.path.join(image_dir, filename))
+                image_positions[cell_address] = f'{image_url_prefix}/{filename}'
 
     return image_positions
 
