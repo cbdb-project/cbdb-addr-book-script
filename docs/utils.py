@@ -2,6 +2,7 @@ import openpyxl
 from openpyxl_image_loader import SheetImageLoader
 import requests
 import os.path
+import shutil
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -70,8 +71,11 @@ def extract_images_from_excel(excel_file):
     # docs/static/images while data.json refers to them as static/images/...
     image_dir = 'docs/static/images'
     image_url_prefix = 'static/images'
-    if not os.path.exists(image_dir):
-        os.makedirs(image_dir)
+    # Regenerate from scratch each run: a photo removed from the spreadsheet,
+    # or a row that shifted, must not leave a stale image behind.
+    if os.path.exists(image_dir):
+        shutil.rmtree(image_dir)
+    os.makedirs(image_dir)
 
     image_positions = {}
 
