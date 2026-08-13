@@ -2,6 +2,7 @@ import openpyxl
 from openpyxl_image_loader import SheetImageLoader
 import requests
 import os.path
+import shutil
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -66,9 +67,15 @@ def extract_images_from_excel(excel_file):
     sheet = wb[RANGE_NAME]
     image_loader = SheetImageLoader(sheet)
 
-    image_dir = 'static/images'
-    if not os.path.exists(image_dir):
-        os.makedirs(image_dir)
+    # GitHub Pages serves this repo from /docs, so the files must live under
+    # docs/static/images while data.json refers to them as static/images/...
+    image_dir = 'docs/static/images'
+    image_url_prefix = 'static/images'
+    # Regenerate from scratch each run: a photo removed from the spreadsheet,
+    # or a row that shifted, must not leave a stale image behind.
+    if os.path.exists(image_dir):
+        shutil.rmtree(image_dir)
+    os.makedirs(image_dir)
 
     image_positions = {}
 
@@ -79,7 +86,7 @@ def extract_images_from_excel(excel_file):
                 image = image_loader.get(cell_address)
                 image_path = os.path.join(image_dir, f'image_{cell_address}.png')
                 image.save(image_path)
-                image_positions[cell_address] = f'{image_dir}/image_{cell_address}.png'
+                image_positions[cell_address] = f'{image_url_prefix}/image_{cell_address}.png'
 
     return image_positions
 
